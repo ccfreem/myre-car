@@ -62,12 +62,16 @@ const SignIn = ({ setIsLoggedIn }) => {
 
   const handleFormSubmit = e => {
     e.preventDefault()
-
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setIsLoggedIn(true)
-    }, 500)
+    if (!username || !password) {
+    }
+    // simulate a login request
+    if (username && password) {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+        setIsLoggedIn(true)
+      }, 500)
+    }
   }
 
   return (
