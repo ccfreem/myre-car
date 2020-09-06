@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button'
+import { isEmail } from 'validator'
 import TextField from '@material-ui/core/TextField'
+import TextInput from '../common/TextInput'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -57,21 +59,41 @@ const Spinner = styled(CircularProgress)`
 const SignIn = ({ setIsLoggedIn }) => {
   const [loading, setLoading] = useState(false)
   const [emailError, setEmailError] = useState(false)
-  const [username, setUsername] = useState('')
+  const [passwordError, setPasswordError] = useState(false)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const handleFormSubmit = e => {
     e.preventDefault()
-    if (!username || !password) {
+
+    if (!email || !isEmail(email)) {
+      setEmailError(true)
+    }
+    if (!password) {
+      setPasswordError(true)
     }
     // simulate a login request
-    if (username && password) {
+    if (email && password) {
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
         setIsLoggedIn(true)
       }, 500)
     }
+  }
+
+  const handleEmail = email => {
+    if (isEmail(email) && emailError) {
+      setEmailError(false)
+    }
+    setEmail(email)
+  }
+
+  const handlePassword = password => {
+    if (passwordError) {
+      setPasswordError(false)
+    }
+    setPassword(password)
   }
 
   return (
@@ -82,23 +104,24 @@ const SignIn = ({ setIsLoggedIn }) => {
             Login with email
           </Typography>
           <FormContainer>
-            <TextField
+            <TextInput
               label='Email'
-              margin='normal'
-              fullWidth
+              type='email'
               required
-              onChange={e => setUsername(e.target.value)}
+              value={email}
+              handleChange={handleEmail}
               id='username_input'
+              errorText='Please provide a valid email'
               error={emailError}
             />
-            <TextField
+            <TextInput
               label='Password'
-              margin='normal'
-              fullWidth
-              required
               type='password'
-              onChange={e => setPassword(e.target.value)}
-              autoComplete='current-password'
+              required
+              value={password}
+              handleChange={handlePassword}
+              error={passwordError}
+              errorText='Password required'
               id='pwd_input'
             />
             <SubmitButton
