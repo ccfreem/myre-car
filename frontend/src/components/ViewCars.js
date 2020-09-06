@@ -14,7 +14,7 @@ const GET_CARS = gql`
       make
       model
       year
-      VIN
+      vin
     }
   }
 `
@@ -38,7 +38,7 @@ const ViewCars = ({ setIsLoggedIn }) => {
     fetchPolicy: 'network-only'
   })
 
-  if (error) return <p>ooooops</p>
+  if (error) console.log(error)
   return (
     <>
       <AppBar position='static'>

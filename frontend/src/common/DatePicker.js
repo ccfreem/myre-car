@@ -13,7 +13,6 @@ const DatePicker = ({ year, setYear }) => {
         label='Year'
         views={['year']}
         value={year}
-        inputVariant='outlined'
         maxDateMessage='The year of the car cannot be in the future'
         onChange={setYear}
       />

@@ -23,6 +23,7 @@
   "scripts": {
     "all": "concurrently \"cd ../functions&& yarn serve\" \"yarn start\"",
     "start": "react-scripts start",
+    "deploy": "firebase deploy --only hosting",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
