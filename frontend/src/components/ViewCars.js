@@ -11,6 +11,10 @@ const GET_CARS = gql`
   query getCars($id: Int!) {
     getCars(id: $id) {
       id
+      make
+      model
+      year
+      VIN
     }
   }
 `
@@ -49,7 +53,7 @@ const ViewCars = ({ setIsLoggedIn }) => {
       </AppBar>
       {loading && <div>lodaaaigngn....</div>}
       {data?.getCars?.map(car => (
-        <EditCar car={car} />
+        <EditCar car={car} key={car.id} />
       ))}
     </>
   )

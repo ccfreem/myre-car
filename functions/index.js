@@ -3,8 +3,8 @@ const admin = require('firebase-admin')
 const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const serviceAccount = require('./myreCarServiceAccount.json')
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
-// admin.initializeApp()
+// admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
+admin.initializeApp()
 const db = admin.firestore()
 
 // Construct a schema, using GraphQL schema language
@@ -38,70 +38,70 @@ const resolvers = {
     getCars: (parent, args, context, info) => {
       return [
         {
-          id: '123213',
+          id: '1',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '2',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '3',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '4',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '5',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '6',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '7',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '8',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '9',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',
           VIN: '1232131'
         },
         {
-          id: '123213',
+          id: '10',
           make: 'Fjord',
           model: 'Fiesta',
           year: '1988',

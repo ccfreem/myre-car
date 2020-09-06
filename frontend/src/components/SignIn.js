@@ -2,11 +2,10 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button'
 import { isEmail } from 'validator'
-import TextField from '@material-ui/core/TextField'
-import TextInput from '../common/TextInput'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import TextInput from '../common/TextInput'
 import background from '../media/login-background.jpg'
 
 const MainContainer = styled.div`
@@ -66,14 +65,18 @@ const SignIn = ({ setIsLoggedIn }) => {
   const handleFormSubmit = e => {
     e.preventDefault()
 
+    // Check for email existence and validity
     if (!email || !isEmail(email)) {
       setEmailError(true)
     }
+    // Check for password existence, no validation
     if (!password) {
       setPasswordError(true)
     }
-    // simulate a login request
-    if (email && password) {
+
+    // Simulate a login request if all values present and
+    // valid
+    if (email && password && isEmail(email)) {
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
@@ -83,6 +86,8 @@ const SignIn = ({ setIsLoggedIn }) => {
   }
 
   const handleEmail = email => {
+    // If the email is valid, and there is an error
+    // clear out the error
     if (isEmail(email) && emailError) {
       setEmailError(false)
     }
@@ -90,6 +95,8 @@ const SignIn = ({ setIsLoggedIn }) => {
   }
 
   const handlePassword = password => {
+    // If the user enters a password after a failed
+    // attempt to login without one, clear out the error
     if (passwordError) {
       setPasswordError(false)
     }

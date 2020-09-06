@@ -9,7 +9,8 @@ const TextInput = ({
   type,
   id,
   error,
-  errorText
+  errorText,
+  ...additionalProps
 }) => {
   return (
     <TextField
@@ -23,6 +24,7 @@ const TextInput = ({
       id={id}
       error={error}
       helperText={error ? errorText : null}
+      {...additionalProps}
     />
   )
 }
