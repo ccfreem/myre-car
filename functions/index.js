@@ -4,7 +4,8 @@ const admin = require('firebase-admin')
 const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const serviceAccount = require('./myreCarServiceAccount.json')
-const { subYears, isAfter } = require('date-fns')
+const { subYears, isAfter, isValid } = require('date-fns')
+const { is } = require('date-fns/locale')
 
 if (functions.config().runtime) {
   admin.initializeApp()
@@ -13,7 +14,9 @@ if (functions.config().runtime) {
 }
 const db = admin.firestore()
 
-// Construct a schema, using GraphQL schema language
+// Construct schema, typically this would consist of individual files in a ./schema folder,
+// with a file for each business need, but for skim-ability and demo-sake, I figured
+// I would save some clicks and keep them here
 const typeDefs = gql`
   type Query {
     getCars(id: Int!): [Car]
@@ -23,6 +26,14 @@ const typeDefs = gql`
   type Mutation {
     createCar(carInput: CreateCarInput): String
     updateCar(id: String!, carInput: UpdateCarInput): Boolean
+  }
+
+  type Car {
+    id: String
+    make: String
+    model: String
+    year: String
+    vin: String
   }
 
   input CreateCarInput {
@@ -38,55 +49,64 @@ const typeDefs = gql`
     model: String
     year: String
   }
-
-  type Car {
-    id: String
-    make: String
-    model: String
-    year: String
-    vin: String
-  }
 `
 
-// Provide resolver functions for your schema fields
+// The resolvers, same thought as above, should be in its own folder, broken up by
+// functionality, but clicks clicks are sacred
 const resolvers = {
   Query: {
     getCars: async (parent, args, context, info) => {
-      const snapShot = await db.collection('cars').get()
-      const cars = []
-      snapShot.forEach(doc => cars.push({ id: doc.id, ...doc.data() }))
-      return cars
+      // Simply get all the cars in the db
+      try {
+        const snapShot = await db.collection('cars').get()
+        const cars = []
+        snapShot.forEach(doc => cars.push({ id: doc.id, ...doc.data() }))
+        return cars
+      } catch (err) {
+        console.error(err)
+      }
     },
     checkForVin: async (_, { vin }) => {
       // We want to ensure that we only have one car with the same vin
-      const snapShot = await db.collection('cars').where('vin', '==', vin).get()
-      const cars = []
-      snapShot.forEach(doc => cars.push(doc.data()))
-      // If there are any cars with the same vin, return true
-      if (cars.length) {
-        return true
-      } else {
-        return false
+      try {
+        const snapShot = await db
+          .collection('cars')
+          .where('vin', '==', vin)
+          .get()
+        const cars = []
+        snapShot.forEach(doc => cars.push(doc.data()))
+        // If there are any cars with the same vin, return true
+        if (cars.length) {
+          return true
+        } else {
+          return false
+        }
+      } catch (err) {
+        console.error(err)
       }
     }
   },
   Mutation: {
     createCar: async (_, args) => {
-      const { make, model, year, vin } = args.carInput
-      // validate year
+      try {
+        const { make, model, year, vin } = args.carInput
+        // validate year
 
-      // doublecheck VIN doesnt exist
+        // doublecheck VIN doesnt exist
 
-      // If all validation has succeeded, create the car
-      // and return the car's auto-generated id
-      const newCar = await db.collection('cars').add({
-        make,
-        model,
-        year,
-        vin
-      })
+        // If all validation has succeeded, create the car
+        // and return the car's auto-generated id
+        const newCar = await db.collection('cars').add({
+          make,
+          model,
+          year,
+          vin
+        })
 
-      return newCar.id
+        return newCar.id
+      } catch (err) {
+        console.error(err)
+      }
     },
     updateCar: async (_, args) => {
       const { id, carInput } = args
@@ -113,6 +133,16 @@ const resolvers = {
   }
 }
 
+const checkForValidYear = year => {
+  // Probably need to do some date handling per timezone, depending on use case
+  const today = new Date()
+
+  if (!isValid(year)) {
+    return false
+  }
+
+  return isAfter(year, 16)
+}
 const app = express()
 const server = new ApolloServer({ typeDefs, resolvers })
 server.applyMiddleware({ app, path: '/', cors: true })
