@@ -117,6 +117,7 @@ const SignIn = ({ setIsLoggedIn }) => {
               required
               value={email}
               handleChange={handleEmail}
+              fullWidth
               id='username_input'
               errorText='Please provide a valid email'
               error={emailError}
@@ -127,6 +128,7 @@ const SignIn = ({ setIsLoggedIn }) => {
               required
               value={password}
               handleChange={handlePassword}
+              fullWidth
               error={passwordError}
               errorText='Password required'
               id='pwd_input'

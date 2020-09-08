@@ -4,6 +4,7 @@ const admin = require('firebase-admin')
 const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const serviceAccount = require('./myreCarServiceAccount.json')
+const { subYears, isAfter } = require('date-fns')
 
 if (functions.config().runtime) {
   admin.initializeApp()
@@ -18,15 +19,23 @@ const typeDefs = gql`
     getCars(id: Int!): [Car]
     checkForVin(vin: String!): Boolean
   }
+
   type Mutation {
-    createCar(carInput: CarInput): String
+    createCar(carInput: CreateCarInput): String
+    updateCar(id: String!, carInput: UpdateCarInput): Boolean
   }
 
-  input CarInput {
+  input CreateCarInput {
+    make: String!
+    model: String!
+    year: String!
+    vin: String!
+  }
+
+  input UpdateCarInput {
     make: String
     model: String
     year: String
-    VIN: String
   }
 
   type Car {
@@ -61,7 +70,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    createCar: async (parent, args, context, info) => {
+    createCar: async (_, args) => {
       const { make, model, year, VIN } = args.carInput
       // validate year
 
@@ -77,6 +86,28 @@ const resolvers = {
       })
 
       return newCar.id
+    },
+    updateCar: async (_, args) => {
+      const { id, carInput } = args
+      console.log('got here')
+      try {
+        // validate year - can't trust client side
+        const isValidYear = isAfter(
+          new Date(carInput.year),
+          subYears(new Date(), 16)
+        )
+        console.log(carInput)
+        // Firestore handles not updating duplicate values if the are the same
+        await db
+          .collection('cars')
+          .doc(id)
+          .update({
+            ...carInput
+          })
+        return true
+      } catch (err) {
+        return false
+      }
     }
   }
 }
