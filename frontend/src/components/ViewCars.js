@@ -106,13 +106,13 @@ const ViewCars = ({ setIsLoggedIn }) => {
       <main className={classes.content}>
         {wantsToEdit ? (
           <>
-            {loading && <div>lodaaaigngn....</div>}
+            {loading && <div>Loading Cars...</div>}
             {data?.getCars?.map(car => (
               <EditCar car={car} key={car.id} newCar={false} />
             ))}
           </>
         ) : (
-          <EditCar />
+          <EditCar newCar={true} />
         )}
       </main>
     </div>

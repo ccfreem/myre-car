@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button'
@@ -58,9 +58,15 @@ const EDIT_CAR = gql`
   }
 `
 
+const CREATE_CAR = gql`
+  mutation createCar($carInput: CreateCarInput) {
+    createCar(carInput: $carInput)
+  }
+`
+
 const EditCars = ({ car, newCar }) => {
   const [id, setId] = useState(car?.id)
-  const [year, setYear] = useState(car?.year ? car.year : null)
+  const [year, setYear] = useState(car?.year)
   const [make, setMake] = useState(car?.make)
   const [model, setModel] = useState(car?.model)
   const [vin, setVin] = useState(car?.vin)
@@ -69,20 +75,16 @@ const EditCars = ({ car, newCar }) => {
     modelError: false,
     vinError: false
   })
-  const [updateCar, { data, loading, error }] = useMutation(EDIT_CAR)
-  const [carData, setCarData] = useState({
-    id: '',
-    make: '',
-    model: '',
-    year: '',
-    vin: ''
-  })
 
-  useEffect(() => {
-    if (car) {
-      setCarData(car)
-    }
-  }, [car])
+  const [
+    updateCar,
+    { loading: updateLoading, error: updateError }
+  ] = useMutation(EDIT_CAR)
+
+  const [
+    createCar,
+    { loading: createLoading, error: createError }
+  ] = useMutation(CREATE_CAR)
 
   const handleVin = vin => {
     // being that the oldest car for hyre according to
@@ -100,6 +102,21 @@ const EditCars = ({ car, newCar }) => {
   }
   const handleSave = () => {
     if (newCar) {
+      // Create
+      console.log('here')
+      console.log(make, model, vin, year)
+      if (make && model && vin && year) {
+        createCar({
+          variables: {
+            carInput: {
+              make,
+              model,
+              year,
+              vin
+            }
+          }
+        })
+      }
     } else {
       if (make && model && year) {
         updateCar({
@@ -108,7 +125,8 @@ const EditCars = ({ car, newCar }) => {
             carInput: {
               make,
               model,
-              year
+              year,
+              vin
             }
           }
         })
@@ -116,6 +134,11 @@ const EditCars = ({ car, newCar }) => {
     }
   }
 
+  if (updateError || createError) {
+    // popup error
+  }
+
+  const buttonText = newCar ? 'Create Car' : 'Update Car'
   return (
     <OuterContainer>
       <InnerContainer>
@@ -152,7 +175,7 @@ const EditCars = ({ car, newCar }) => {
             type='text'
             value={vin || ''}
             handleChange={value => handleVin(value)}
-            id={`vin_input-${carData.id}`}
+            id={`vin_input-${id}`}
             errorText='Please provide a vin'
             width='250px'
             error={errors.vinError}
@@ -165,9 +188,8 @@ const EditCars = ({ car, newCar }) => {
           color='primary'
           onClick={handleSave}
         >
-          {loading ? <Spinner size={24} /> : 'Update'}
+          {updateLoading ? <Spinner size={24} /> : buttonText}
         </SubmitButton>
-        <SubHeader>The Extras</SubHeader>
       </InnerContainer>
     </OuterContainer>
   )

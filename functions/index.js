@@ -33,6 +33,7 @@ const typeDefs = gql`
   }
 
   input UpdateCarInput {
+    vin: String
     make: String
     model: String
     year: String
@@ -71,7 +72,7 @@ const resolvers = {
   },
   Mutation: {
     createCar: async (_, args) => {
-      const { make, model, year, VIN } = args.carInput
+      const { make, model, year, vin } = args.carInput
       // validate year
 
       // doublecheck VIN doesnt exist
@@ -79,10 +80,10 @@ const resolvers = {
       // If all validation has succeeded, create the car
       // and return the car's auto-generated id
       const newCar = await db.collection('cars').add({
-        make: make,
-        model: model,
-        year: year,
-        vin: VIN
+        make,
+        model,
+        year,
+        vin
       })
 
       return newCar.id
