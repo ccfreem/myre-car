@@ -129,13 +129,11 @@ const EditCars = ({ car, newCar }) => {
               vin
             }
           }
+        }).catch(err => {
+          console.log(err)
         })
       }
     }
-  }
-
-  if (updateError || createError) {
-    // popup error
   }
 
   const buttonText = newCar ? 'Create Car' : 'Update Car'

@@ -59,8 +59,9 @@ const resolvers = {
       // Simply get all the cars in the db
       try {
         const snapShot = await db.collection('cars').get()
-        const cars = []
-        snapShot.forEach(doc => cars.push({ id: doc.id, ...doc.data() }))
+
+        // Return the id of the document combined with the data for the car as the
+        const cars = snapShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         return cars
       } catch (err) {
         console.error(err)
@@ -73,8 +74,7 @@ const resolvers = {
           .collection('cars')
           .where('vin', '==', vin)
           .get()
-        const cars = []
-        snapShot.forEach(doc => cars.push(doc.data()))
+        const cars = snapShot.docs.map(doc => doc.data())
         // If there are any cars with the same vin, return true
         if (cars.length) {
           return true
@@ -91,6 +91,10 @@ const resolvers = {
       try {
         const { make, model, year, vin } = args.carInput
         // validate year
+
+        // validate year - can't trust client side
+        const isValidYear = validateYearInRange(carInput.year)
+        if (!isValidYear) throw Error('Invalid!')
 
         // doublecheck VIN doesnt exist
 
@@ -110,14 +114,12 @@ const resolvers = {
     },
     updateCar: async (_, args) => {
       const { id, carInput } = args
-      console.log('got here')
       try {
         // validate year - can't trust client side
-        const isValidYear = isAfter(
-          new Date(carInput.year),
-          subYears(new Date(), 16)
-        )
-        console.log(carInput)
+        if (carInput.year) {
+          const isValidYear = validateYearInRange(carInput.year)
+          if (!isValidYear) throw Error('Invalid!')
+        }
         // Firestore handles not updating duplicate values if the are the same
         await db
           .collection('cars')
@@ -127,24 +129,28 @@ const resolvers = {
           })
         return true
       } catch (err) {
-        return false
+        throw Error(err)
       }
     }
   }
 }
 
-const checkForValidYear = year => {
-  // Probably need to do some date handling per timezone, depending on use case
-  const today = new Date()
-
-  if (!isValid(year)) {
-    return false
-  }
-
-  return isAfter(year, 16)
+const validateYearInRange = year => {
+  return isAfter(new Date(year), subYears(new Date(), 16))
 }
+
 const app = express()
-const server = new ApolloServer({ typeDefs, resolvers })
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  formatError: error => {
+    // Implement system logging with all needed information,
+    console.error(error)
+    return {
+      message: 'Oops something went wrong!'
+    }
+  }
+})
 server.applyMiddleware({ app, path: '/', cors: true })
 
 exports.graphql = functions.https.onRequest(app)
