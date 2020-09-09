@@ -64,47 +64,90 @@ const CREATE_CAR = gql`
   }
 `
 
-const EditCars = ({ car, newCar }) => {
+const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
   const [id, setId] = useState(car?.id)
   const [year, setYear] = useState(car?.year)
   const [make, setMake] = useState(car?.make)
   const [model, setModel] = useState(car?.model)
   const [vin, setVin] = useState(car?.vin)
   const [errors, setErrors] = useState({
-    makeError: false,
-    modelError: false,
-    vinError: false
+    year: false,
+    make: false,
+    model: false,
+    vin: false
   })
 
-  const [
-    updateCar,
-    { loading: updateLoading, error: updateError }
-  ] = useMutation(EDIT_CAR)
-
-  const [
-    createCar,
-    { loading: createLoading, error: createError }
-  ] = useMutation(CREATE_CAR)
+  const [updateCar, { loading: updateLoading }] = useMutation(EDIT_CAR)
+  const [createCar, { loading: createLoading }] = useMutation(CREATE_CAR)
 
   const handleVin = vin => {
     // being that the oldest car for hyre according to
     // https://www.hyrecar.com/blog/state-rideshare-vehicle-requirements/
     // is 15 years (after 2005), the VIN needs to be 17 alpha-numeric characters
-    const newVin = vin?.trim().replace(/[\W_]+/g, '')
+    const newVin = vin
+      ?.trim()
+      .replace(/[\W_]+/g, '')
+      .toUpperCase()
+
     if (vin.length < 17) {
-      setErrors({ ...errors, vinError: true })
+      setErrors({ ...errors, vin: true })
     } else {
-      setErrors({ ...errors, vinError: false })
+      setErrors({ ...errors, vin: false })
     }
     if (vin.length <= 17) {
       setVin(newVin)
     }
   }
+
+  const checkForEmpty = (field, value) => {
+    const newErrors = {}
+    if (!make) {
+      newErrors['make'] = true
+    }
+    if (!model) {
+      newErrors['model'] = true
+    }
+    if (!year) {
+      newErrors['year'] = true
+    }
+    if (!vin) {
+      newErrors['vin'] = true
+    }
+    setErrors({
+      ...errors,
+      ...newErrors
+    })
+  }
+
+  const handleBlur = e => {
+    // As we have the id's set up like nameOfField_id
+    // we can split by _ and take the first element of that
+    // array to identify the field
+    const input = e.target.id.split('_')[0]
+    const inputValueLength = e.target.value.length
+    // If there is nothing in the field, set the error
+    // so the user knows
+    if (inputValueLength < 1 || !e.target.value.trim()) {
+      handleFormErrors(input, true)
+    } else {
+      handleFormErrors(input, false)
+    }
+  }
+
+  // Handle the form error state based on input
+  const handleFormErrors = (input, hasError) => {
+    const newFormErrors = { ...errors }
+    newFormErrors[input] = hasError
+    setErrors(newFormErrors)
+  }
+
   const handleSave = () => {
+    // If there are any errors, stop the process
+    if (Object.values(errors).some(error => error)) {
+      return
+    }
     if (newCar) {
       // Create
-      console.log('here')
-      console.log(make, model, vin, year)
       if (make && model && vin && year) {
         createCar({
           variables: {
@@ -116,6 +159,14 @@ const EditCars = ({ car, newCar }) => {
             }
           }
         })
+          .then(() => {
+            refetch()
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      } else {
+        checkForEmpty()
       }
     } else {
       if (make && model && year) {
@@ -129,9 +180,15 @@ const EditCars = ({ car, newCar }) => {
               vin
             }
           }
-        }).catch(err => {
-          console.log(err)
         })
+          .then(() => {
+            refetch()
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      } else {
+        checkForEmpty()
       }
     }
   }
@@ -153,7 +210,8 @@ const EditCars = ({ car, newCar }) => {
             id={`make_input-${id}`}
             errorText='Please provide a make'
             width='250px'
-            error={errors.makeError}
+            onBlur={e => handleBlur(e)}
+            error={errors.make}
           />
         </InputRow>
         <InputRow>
@@ -166,17 +224,20 @@ const EditCars = ({ car, newCar }) => {
             id={`model_input-${id}`}
             errorText='Please provide a model'
             width='250px'
-            error={errors.modelError}
+            onBlur={e => handleBlur(e)}
+            error={errors.model}
           />
           <TextInput
             label='VIN'
             type='text'
+            disabled={!newCar}
             value={vin || ''}
             handleChange={value => handleVin(value)}
+            onBlur={e => handleBlur(e)}
             id={`vin_input-${id}`}
-            errorText='Please provide a vin'
+            errorText='Please provide a valid 17 digit VIN'
             width='250px'
-            error={errors.vinError}
+            error={errors.vin}
           />
         </InputRow>
         <SubmitButton
@@ -186,7 +247,7 @@ const EditCars = ({ car, newCar }) => {
           color='primary'
           onClick={handleSave}
         >
-          {updateLoading ? <Spinner size={24} /> : buttonText}
+          {updateLoading || createLoading ? <Spinner size={24} /> : buttonText}
         </SubmitButton>
       </InnerContainer>
     </OuterContainer>

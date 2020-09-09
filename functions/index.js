@@ -5,7 +5,7 @@ const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const serviceAccount = require('./myreCarServiceAccount.json')
 const { subYears, isAfter, isValid } = require('date-fns')
-const { is } = require('date-fns/locale')
+const { firestore } = require('firebase-admin')
 
 if (functions.config().runtime) {
   admin.initializeApp()
@@ -58,7 +58,10 @@ const resolvers = {
     getCars: async (parent, args, context, info) => {
       // Simply get all the cars in the db
       try {
-        const snapShot = await db.collection('cars').get()
+        const snapShot = await db
+          .collection('cars')
+          .orderBy('createdAt', 'desc')
+          .get()
 
         // Return the id of the document combined with the data for the car as the
         const cars = snapShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
@@ -87,9 +90,9 @@ const resolvers = {
     }
   },
   Mutation: {
-    createCar: async (_, args) => {
+    createCar: async (_, { carInput }) => {
       try {
-        const { make, model, year, vin } = args.carInput
+        const { make, model, year, vin } = carInput
         // validate year
 
         // validate year - can't trust client side
@@ -104,7 +107,8 @@ const resolvers = {
           make,
           model,
           year,
-          vin
+          vin,
+          createdAt: firestore.FieldValue.serverTimestamp()
         })
 
         return newCar.id

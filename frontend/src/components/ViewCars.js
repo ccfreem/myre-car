@@ -16,6 +16,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const GET_CARS = gql`
   query getCars($id: Int!) {
@@ -41,6 +42,12 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1
   },
+  progress: {
+    display: 'flex',
+    justifyContent: 'center',
+    height: '100vh',
+    alignItems: 'center'
+  },
   toolbar: {
     justifyContent: 'space-between'
   },
@@ -59,10 +66,9 @@ const useStyles = makeStyles(theme => ({
 const ViewCars = ({ setIsLoggedIn }) => {
   const classes = useStyles()
   const [wantsToEdit, setWantsToEdit] = useState(true)
-  const { loading, error, data } = useQuery(GET_CARS, {
+  const { loading, error, data, refetch } = useQuery(GET_CARS, {
     variables: { id: 1 },
-    fetchPolicy: 'network-only',
-    skip: !wantsToEdit
+    fetchPolicy: 'network-only'
   })
 
   if (error) console.log(error)
@@ -106,13 +112,26 @@ const ViewCars = ({ setIsLoggedIn }) => {
       <main className={classes.content}>
         {wantsToEdit ? (
           <>
-            {loading && <div>Loading Cars...</div>}
+            {loading && (
+              <div className={classes.progress}>
+                <CircularProgress />
+              </div>
+            )}
             {data?.getCars?.map(car => (
-              <EditCar car={car} key={car.id} newCar={false} />
+              <EditCar
+                car={car}
+                key={car.id}
+                newCar={false}
+                refetch={refetch}
+              />
             ))}
           </>
         ) : (
-          <EditCar newCar={true} />
+          <EditCar
+            newCar={true}
+            refetch={refetch}
+            setWantsToEdit={setWantsToEdit}
+          />
         )}
       </main>
     </div>
