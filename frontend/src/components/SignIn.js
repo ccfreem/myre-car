@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import Button from '@material-ui/core/Button'
+import { useHistory } from 'react-router-dom'
 import { isEmail } from 'validator'
+
+import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+
 import TextInput from '../common/TextInput'
 import background from '../media/login-background.jpg'
 
@@ -24,11 +27,6 @@ const OuterContainer = styled.div`
   margin-left: 24px;
   margin-right: 24px;
   display: block;
-  @media (min-width: 448px) {
-    width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-  }
 `
 
 const InnerContainer = styled(Paper)`
@@ -55,7 +53,8 @@ const Spinner = styled(CircularProgress)`
   }
 `
 
-const SignIn = ({ setIsLoggedIn }) => {
+const SignIn = () => {
+  const history = useHistory()
   const [loading, setLoading] = useState(false)
   const [emailError, setEmailError] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
@@ -80,7 +79,7 @@ const SignIn = ({ setIsLoggedIn }) => {
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
-        setIsLoggedIn(true)
+        history.push('/view')
       }, 500)
     }
   }

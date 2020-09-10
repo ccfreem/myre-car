@@ -223,25 +223,21 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
   }
 
   const buttonText = newCar ? 'Create Car' : 'Update Car'
+  const carId = car?.id || 'new_car'
   return (
     <OuterContainer>
       <InnerContainer>
         <Header>{make}</Header>
         <SubHeader>The Basics</SubHeader>
         <InputRow>
-          <DatePicker
-            year={year}
-            setYear={setYear}
-            width='250px'
-            id={car?.id}
-          />
+          <DatePicker year={year} setYear={setYear} width='250px' id={carId} />
           <TextInput
             label='Make'
             type='text'
             required
             value={make || ''}
             handleChange={setMake}
-            id={`make_input-${car?.id}`}
+            id={`make_input-${carId}`}
             errorText='Please provide a make'
             width='250px'
             onBlur={e => handleBlur(e)}
@@ -255,7 +251,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
             required
             value={model || ''}
             handleChange={setModel}
-            id={`model_input-${car?.id}`}
+            id={`model_input-${carId}`}
             errorText='Please provide a model'
             width='250px'
             onBlur={e => handleBlur(e)}
@@ -268,7 +264,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
             value={vin || ''}
             handleChange={value => handleVin(value)}
             onBlur={e => handleBlur(e)}
-            id={`vin_input-${car?.id}`}
+            id={`vin_input-${carId}`}
             errorText='Please provide a valid 17 digit VIN'
             width='250px'
             error={errors.vin}

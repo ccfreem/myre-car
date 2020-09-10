@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import EditCar from './EditCar'
+import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Snackbar from '@material-ui/core/Snackbar'
@@ -17,6 +17,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import EditCar from './EditCar'
 
 const GET_CARS = gql`
   query getCars($id: Int!) {
@@ -63,7 +64,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const ViewCars = ({ setIsLoggedIn }) => {
+const ViewCars = () => {
+  const history = useHistory()
   const classes = useStyles()
   const [alert, setAlert] = useState({
     open: false,
@@ -100,7 +102,7 @@ const ViewCars = ({ setIsLoggedIn }) => {
       <AppBar position='fixed' className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <Typography variant='h6'>MyreCar... get it?</Typography>
-          <Button color='inherit' onClick={() => setIsLoggedIn(false)}>
+          <Button color='inherit' onClick={() => history.push('/')}>
             Logout
           </Button>
         </Toolbar>

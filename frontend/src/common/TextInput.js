@@ -20,7 +20,6 @@ const TextInput = ({
   id,
   error,
   errorText,
-
   ...additionalProps
 }) => {
   return (
