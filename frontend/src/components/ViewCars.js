@@ -3,7 +3,7 @@ import { gql, useQuery } from '@apollo/client'
 import EditCar from './EditCar'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
-
+import Snackbar from '@material-ui/core/Snackbar'
 import Drawer from '@material-ui/core/Drawer'
 import AppBar from '@material-ui/core/AppBar'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -65,13 +65,35 @@ const useStyles = makeStyles(theme => ({
 
 const ViewCars = ({ setIsLoggedIn }) => {
   const classes = useStyles()
+  const [alert, setAlert] = useState({
+    open: false,
+    message: '',
+    type: ''
+  })
   const [wantsToEdit, setWantsToEdit] = useState(true)
   const { loading, error, data, refetch } = useQuery(GET_CARS, {
-    variables: { id: 1 },
-    fetchPolicy: 'network-only'
+    // Simulate the user having an id of 1
+    variables: { id: 1 }
   })
 
-  if (error) console.log(error)
+  if (error) {
+    // Given the severity of this error, would most likely need to
+    // redirect to a support page, but for the demo, open the alert
+    setAlert({
+      open: true,
+      message: 'Something went wrong! Call help!'
+    })
+  }
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setAlert({
+      open: false
+    })
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -123,6 +145,7 @@ const ViewCars = ({ setIsLoggedIn }) => {
                 key={car.id}
                 newCar={false}
                 refetch={refetch}
+                setAlert={setAlert}
               />
             ))}
           </>
@@ -131,9 +154,17 @@ const ViewCars = ({ setIsLoggedIn }) => {
             newCar={true}
             refetch={refetch}
             setWantsToEdit={setWantsToEdit}
+            setAlert={setAlert}
           />
         )}
       </main>
+      <Snackbar
+        open={alert.open}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        autoHideDuration={1000}
+        onClose={handleClose}
+        message={alert.message}
+      ></Snackbar>
     </div>
   )
 }

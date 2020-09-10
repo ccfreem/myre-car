@@ -64,8 +64,9 @@ const CREATE_CAR = gql`
   }
 `
 
-const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
-  const [id, setId] = useState(car?.id)
+// This component is a little lenghty, I would probably split this up into a couple components
+// for create/edit, but I kept these here for the demo
+const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
   const [year, setYear] = useState(car?.year)
   const [make, setMake] = useState(car?.make)
   const [model, setModel] = useState(car?.model)
@@ -77,8 +78,28 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
     vin: false
   })
 
-  const [updateCar, { loading: updateLoading }] = useMutation(EDIT_CAR)
-  const [createCar, { loading: createLoading }] = useMutation(CREATE_CAR)
+  const [updateCar, { loading: updateLoading }] = useMutation(EDIT_CAR, {
+    onCompleted() {
+      // Let the user know that things went well
+      setAlert({
+        message: 'Car updated!',
+        open: true
+      })
+      // Refetch the cars just in case
+      refetch()
+    }
+  })
+  const [createCar, { loading: createLoading }] = useMutation(CREATE_CAR, {
+    onCompleted() {
+      // Let the user know that things went well
+      setAlert({
+        message: 'Car created! Now make some money!',
+        open: true
+      })
+      // Refetch the cars then send them to the edit page
+      refetch().then(() => setWantsToEdit(true))
+    }
+  })
 
   const handleVin = vin => {
     // being that the oldest car for hyre according to
@@ -99,7 +120,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
     }
   }
 
-  const checkForEmpty = (field, value) => {
+  const checkForEmpty = () => {
     const newErrors = {}
     if (!make) {
       newErrors['make'] = true
@@ -113,6 +134,8 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
     if (!vin) {
       newErrors['vin'] = true
     }
+    // Set the errors back in state, with the new errors
+    // overriding the previous
     setErrors({
       ...errors,
       ...newErrors
@@ -158,13 +181,16 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
               vin
             }
           }
+        }).catch(err => {
+          // Maybe we want to write something to the console for a
+          // bug-handling dev?
+          console.error(err)
+          // Definitely alert the user
+          setAlert({
+            message: 'Uh oh! Something went wrong!',
+            open: true
+          })
         })
-          .then(() => {
-            refetch()
-          })
-          .catch(err => {
-            console.log(err)
-          })
       } else {
         checkForEmpty()
       }
@@ -180,13 +206,16 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
               vin
             }
           }
+        }).catch(err => {
+          // Maybe we want to write something to the console for a
+          // bug-handling dev?
+          console.error(err)
+          // Definitely alert the user
+          setAlert({
+            message: 'Uh oh! Something went wrong!',
+            open: true
+          })
         })
-          .then(() => {
-            refetch()
-          })
-          .catch(err => {
-            console.log(err)
-          })
       } else {
         checkForEmpty()
       }
@@ -200,14 +229,19 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
         <Header>{make}</Header>
         <SubHeader>The Basics</SubHeader>
         <InputRow>
-          <DatePicker year={year} setYear={setYear} width='250px' id={id} />
+          <DatePicker
+            year={year}
+            setYear={setYear}
+            width='250px'
+            id={car?.id}
+          />
           <TextInput
             label='Make'
             type='text'
             required
             value={make || ''}
             handleChange={setMake}
-            id={`make_input-${id}`}
+            id={`make_input-${car?.id}`}
             errorText='Please provide a make'
             width='250px'
             onBlur={e => handleBlur(e)}
@@ -221,7 +255,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
             required
             value={model || ''}
             handleChange={setModel}
-            id={`model_input-${id}`}
+            id={`model_input-${car?.id}`}
             errorText='Please provide a model'
             width='250px'
             onBlur={e => handleBlur(e)}
@@ -234,7 +268,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit }) => {
             value={vin || ''}
             handleChange={value => handleVin(value)}
             onBlur={e => handleBlur(e)}
-            id={`vin_input-${id}`}
+            id={`vin_input-${car?.id}`}
             errorText='Please provide a valid 17 digit VIN'
             width='250px'
             error={errors.vin}
