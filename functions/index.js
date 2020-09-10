@@ -3,10 +3,10 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
+const { subYears, isAfter } = require('date-fns')
 const serviceAccount = require('./myreCarServiceAccount.json')
-const { subYears, isAfter, isValid } = require('date-fns')
-const { firestore } = require('firebase-admin')
 
+// If the runtime exists, this is deployed to firebase, so we don't need the key
 if (functions.config().runtime) {
   admin.initializeApp()
 } else {
@@ -55,7 +55,7 @@ const typeDefs = gql`
 // functionality, but clicks clicks are sacred
 const resolvers = {
   Query: {
-    getCars: async (parent, args, context, info) => {
+    getCars: async () => {
       // Simply get all the cars in the db
       try {
         const snapShot = await db
@@ -108,7 +108,7 @@ const resolvers = {
           model,
           year,
           vin,
-          createdAt: firestore.FieldValue.serverTimestamp()
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
         })
 
         return newCar.id
