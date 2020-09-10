@@ -4,6 +4,7 @@ const admin = require('firebase-admin')
 const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
 const { subYears, isAfter } = require('date-fns')
+const { v4: uuidv4 } = require('uuid')
 const serviceAccount = require('./myreCarServiceAccount.json')
 
 // If the runtime exists, this is deployed to firebase, so we don't need the key
@@ -67,7 +68,7 @@ const resolvers = {
         const cars = snapShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         return cars
       } catch (err) {
-        console.error(err)
+        throw Error(err)
       }
     },
     checkForVin: async (_, { vin }) => {
@@ -85,7 +86,7 @@ const resolvers = {
           return false
         }
       } catch (err) {
-        console.error(err)
+        throw Error(err)
       }
     }
   },
@@ -113,7 +114,7 @@ const resolvers = {
 
         return newCar.id
       } catch (err) {
-        console.error(err)
+        throw Error(err)
       }
     },
     updateCar: async (_, args) => {
@@ -149,9 +150,15 @@ const server = new ApolloServer({
   resolvers,
   formatError: error => {
     // Implement system logging with all needed information,
-    console.error(error)
+    const refId = uuidv4()
+    console.error({
+      refId,
+      ...error
+    })
+    // Return an error message without potentially sensitive information
     return {
-      message: 'Oops something went wrong!'
+      message: 'Oops something went wrong!',
+      refId: 'test'
     }
   }
 })

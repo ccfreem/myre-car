@@ -16,7 +16,8 @@
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
     "firebase-admin": "^9.1.1",
-    "firebase-functions": "^3.6.1"
+    "firebase-functions": "^3.6.1",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"

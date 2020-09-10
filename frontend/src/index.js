@@ -5,9 +5,10 @@ import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 
-const uri = process.env.REACT_APP_GRAPHQL_ENDPOINT
-  ? process.env.REACT_APP_GRAPHQL_ENDPOINT
-  : 'http://localhost:5001/myrecar-f4563/us-central1/graphql'
+const uri =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5001/myrecar-f4563/us-central1/graphql'
+    : process.env.REACT_APP_GRAPHQL_ENDPOINT
 
 const client = new ApolloClient({
   uri,
