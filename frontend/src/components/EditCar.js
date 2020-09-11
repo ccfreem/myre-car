@@ -71,6 +71,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
   const [make, setMake] = useState(car?.make)
   const [model, setModel] = useState(car?.model)
   const [vin, setVin] = useState(car?.vin)
+  // Different methods for using useState - MUI likes this way in their docs, I prefer one per
   const [errors, setErrors] = useState({
     year: false,
     make: false,
@@ -81,10 +82,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
   const [updateCar, { loading: updateLoading }] = useMutation(EDIT_CAR, {
     onCompleted() {
       // Let the user know that things went well
-      setAlert({
-        message: 'Car updated!',
-        open: true
-      })
+      setAlert('Car updated!')
       // Refetch the cars just in case
       refetch()
     }
@@ -92,11 +90,10 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
   const [createCar, { loading: createLoading }] = useMutation(CREATE_CAR, {
     onCompleted() {
       // Let the user know that things went well
-      setAlert({
-        message: 'Car created! Now make some money!',
-        open: true
-      })
+      setAlert('Car created! Now make some money!')
       // Refetch the cars then send them to the edit page
+      // In this instance I used a basic .then chain, to show my versatility
+      // for the sake of consistency - usually we stick with async await
       refetch().then(() => setWantsToEdit(true))
     }
   })
@@ -164,6 +161,8 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
     setErrors(newFormErrors)
   }
 
+  // Very large, would break apart - this is due to edit and create being
+  // in the same component
   const handleSave = () => {
     // If there are any errors, stop the process
     if (Object.values(errors).some(error => error)) {
@@ -186,10 +185,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
           // bug-handling dev?
           console.error(err)
           // Definitely alert the user
-          setAlert({
-            message: 'Uh oh! Something went wrong!',
-            open: true
-          })
+          setAlert('Uh oh! Something went wrong!')
         })
       } else {
         checkForEmpty()
@@ -211,10 +207,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
           // bug-handling dev?
           console.error(err)
           // Definitely alert the user
-          setAlert({
-            message: 'Uh oh! Something went wrong!',
-            open: true
-          })
+          setAlert('Uh oh! Something went wrong!')
         })
       } else {
         checkForEmpty()

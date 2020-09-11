@@ -30,11 +30,11 @@ const typeDefs = gql`
   }
 
   type Car {
-    id: String
-    make: String
-    model: String
-    year: String
-    vin: String
+    id: String!
+    make: String!
+    model: String!
+    year: String!
+    vin: String!
   }
 
   input CreateCarInput {
@@ -68,9 +68,10 @@ const resolvers = {
         const cars = snapShot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
         return cars
       } catch (err) {
-        throw Error(err)
+        throw new Error(err)
       }
     },
+    // I use _ to let the IDE know not to yell about unused variables
     checkForVin: async (_, { vin }) => {
       // We want to ensure that we only have one car with the same vin
       try {
@@ -86,21 +87,20 @@ const resolvers = {
           return false
         }
       } catch (err) {
-        throw Error(err)
+        throw new Error(err)
       }
     }
   },
   Mutation: {
     createCar: async (_, { carInput }) => {
       try {
+        // We can't trust client side for ANY of these inputs, would typically do
+        // heavy validation on each of these
         const { make, model, year, vin } = carInput
-        // validate year
 
         // validate year - can't trust client side
         const isValidYear = validateYearInRange(carInput.year)
-        if (!isValidYear) throw Error('Invalid!')
-
-        // doublecheck VIN doesnt exist
+        if (!isValidYear) throw new Error('Invalid date range!')
 
         // If all validation has succeeded, create the car
         // and return the car's auto-generated id
@@ -114,16 +114,18 @@ const resolvers = {
 
         return newCar.id
       } catch (err) {
-        throw Error(err)
+        throw new Error(err)
       }
     },
     updateCar: async (_, args) => {
+      // Looser validation for this, as all fields are optional
       const { id, carInput } = args
+
       try {
         // validate year - can't trust client side
         if (carInput.year) {
           const isValidYear = validateYearInRange(carInput.year)
-          if (!isValidYear) throw Error('Invalid!')
+          if (!isValidYear) throw new Error('Invalid date range!')
         }
         // Firestore handles not updating duplicate values if the are the same
         await db
@@ -134,17 +136,20 @@ const resolvers = {
           })
         return true
       } catch (err) {
-        throw Error(err)
+        throw new Error(err)
       }
     }
   }
 }
 
+// Date-fns, could be moment, either way, we don't need to rebuild the wheel
 const validateYearInRange = year => {
   return isAfter(new Date(year), subYears(new Date(), 16))
 }
 
 const app = express()
+
+// Context, Middleware, RBAC, Logging not included, but are nice
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -158,7 +163,7 @@ const server = new ApolloServer({
     // Return an error message without potentially sensitive information
     return {
       message: 'Oops something went wrong!',
-      refId: 'test'
+      refId
     }
   }
 })

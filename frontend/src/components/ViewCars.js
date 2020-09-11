@@ -31,10 +31,8 @@ const GET_CARS = gql`
   }
 `
 
-// This is an example of styling using MUI's makeStyles helper,
+// This is an example of styling using MUI's makeStyles,
 // I don't use this day-to-day, but wanted to show that I'm familiar
-// The styling was taken from https://material-ui.com/components/drawers/
-// but customized to fit my minimal needs
 const drawerWidth = 240
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,12 +65,8 @@ const useStyles = makeStyles(theme => ({
 const ViewCars = () => {
   const history = useHistory()
   const classes = useStyles()
-  const [alert, setAlert] = useState({
-    open: false,
-    message: '',
-    type: ''
-  })
   const [wantsToEdit, setWantsToEdit] = useState(true)
+  const [alert, setAlert] = useState('')
   const { loading, error, data, refetch } = useQuery(GET_CARS, {
     // Simulate the user having an id of 1
     variables: { id: 1 }
@@ -81,19 +75,14 @@ const ViewCars = () => {
   if (error) {
     // Given the severity of this error, would most likely need to
     // redirect to a support page, but for the demo, open the alert
-    setAlert({
-      open: true,
-      message: 'Something went wrong! Call help!'
-    })
+    setAlert('Something went wrong! Call help!')
   }
 
-  const handleClose = (event, reason) => {
+  const handleClose = (_, reason) => {
     if (reason === 'clickaway') {
       return
     }
-    setAlert({
-      open: false
-    })
+    setAlert('')
   }
 
   return (
@@ -141,15 +130,17 @@ const ViewCars = () => {
                 <CircularProgress />
               </div>
             )}
-            {data?.getCars?.map(car => (
-              <EditCar
-                car={car}
-                key={car.id}
-                newCar={false}
-                refetch={refetch}
-                setAlert={setAlert}
-              />
-            ))}
+            {data
+              ? data.getCars?.map(car => (
+                  <EditCar
+                    car={car}
+                    key={car.id}
+                    newCar={false}
+                    refetch={refetch}
+                    setAlert={setAlert}
+                  />
+                ))
+              : null}
           </>
         ) : (
           <EditCar
@@ -161,11 +152,11 @@ const ViewCars = () => {
         )}
       </main>
       <Snackbar
-        open={alert.open}
+        open={Boolean(alert)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         autoHideDuration={1000}
         onClose={handleClose}
-        message={alert.message}
+        message={alert}
       ></Snackbar>
     </div>
   )

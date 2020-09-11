@@ -10,6 +10,8 @@ const uri =
     ? 'http://localhost:5001/myrecar-f4563/us-central1/graphql'
     : process.env.REACT_APP_GRAPHQL_ENDPOINT
 
+// Could use the more middleware, kept it simple, logging - middleware - header
+// setting
 const client = new ApolloClient({
   uri,
   cache: new InMemoryCache()

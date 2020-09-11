@@ -50,3 +50,32 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
+
+# Acknowledgements
+
+1. This is not “Done” - Definition of Done for this was POC
+2. Step 0 - I didn’t validate requirements
+   1. Usually this needs to be buttoned down prior to touching code
+   2. Conversations save money
+3. Things I would work on
+   1. Responsive design
+   2. More CSS reuse
+   3. Break out components more
+   4. Expand on validation
+   5. Consistency
+      1. I use a lot of different methods in here, to start a conversation, not to declare what is “right” or “wrong”
+   6. State management - getting REAALLLY close
+   7. More branches - I don’t ever commit directly to dev
+      1. Break out by features - prs
+   8. CICD - manual deployments are scary
+
+# Questions
+
+1. What’s a typical - what are the big projects coming up?
+2. What’s the lifecycle - higher ups -> management -> designers? -> pms? -> testers -> support staff?
+3. How are developers evaluated
+4. How long has your team been together
+5. Am I here as a replacement? Or is this to accommodate growth
+6. Given what you know about me and my skillset, where do see gaps in what I would be doing.
+7. What are potential barriers that I may face?
+8. Confirm my location
