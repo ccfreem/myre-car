@@ -1,4 +1,4 @@
-# myre-car
+# MyreCar
 
 A repository for consideration to HyreCar.
 
@@ -18,7 +18,7 @@ Details:
 
 ## Acknowledgements
 
-1. This is not “Done”
+1. “Done”
    - Definition of Done for this was enough to start a conversation
 2. Step 0 - I didn’t validate requirements
    - Usually this needs to be buttoned down prior to touching code
