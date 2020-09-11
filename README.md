@@ -1,4 +1,4 @@
-# myre-car
+# MyreCar
 
 A repository for consideration to HyreCar.
 
@@ -18,7 +18,7 @@ Details:
 
 ## Acknowledgements
 
-1. This is not “Done”
+1. “Done”
    - Definition of Done for this was enough to start a conversation
 2. Step 0 - I didn’t validate requirements
    - Usually this needs to be buttoned down prior to touching code
@@ -76,14 +76,3 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 1. Navigate to `./frontend`
 2. Install using `yarn`
 3. Run the app in development mode `yarn start`
-
-# Questions
-
-1. What’s a typical - what are the big projects coming up?
-2. What’s the lifecycle - higher ups -> management -> designers? -> pms? -> testers -> support staff?
-3. How are developers evaluated
-4. How long has your team been together
-5. Am I here as a replacement? Or is this to accommodate growth
-6. Given what you know about me and my skillset, where do see gaps in what I would be doing.
-7. What are potential barriers that I may face?
-8. Confirm my location
