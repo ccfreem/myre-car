@@ -163,6 +163,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
 
   // Very large, would break apart - this is due to edit and create being
   // in the same component
+  const hasAllValues = year && make && model && vin
   const handleSave = () => {
     // If there are any errors, stop the process
     if (Object.values(errors).some(error => error)) {
@@ -170,7 +171,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
     }
     if (newCar) {
       // Create
-      if (make && model && vin && year) {
+      if (hasAllValues) {
         createCar({
           variables: {
             carInput: {
@@ -191,7 +192,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
         checkForEmpty()
       }
     } else {
-      if (make && model && year) {
+      if (hasAllValues) {
         updateCar({
           variables: {
             id: car.id,
@@ -217,10 +218,13 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
 
   const buttonText = newCar ? 'Create Car' : 'Update Car'
   const carId = car?.id || 'new_car'
+
+  const shouldDisableButton =
+    Object.values(errors).some(error => error) || !hasAllValues
   return (
     <OuterContainer>
       <InnerContainer>
-        <Header>{make}</Header>
+        <Header>My {make}</Header>
         <SubHeader>The Basics</SubHeader>
         <InputRow>
           <DatePicker year={year} setYear={setYear} width='250px' id={carId} />
@@ -269,6 +273,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
           variant='contained'
           color='primary'
           onClick={handleSave}
+          disabled={shouldDisableButton}
         >
           {updateLoading || createLoading ? <Spinner size={24} /> : buttonText}
         </SubmitButton>

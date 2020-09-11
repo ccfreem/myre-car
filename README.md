@@ -16,58 +16,66 @@ Details:
 6. Form validation
 7. Likes: material-ui, hooks, apollo client
 
-## Project setup
+## Acknowledgements
 
-#### Front end
+1. This is not “Done”
+   - Definition of Done for this was enough to start a conversation
+2. Step 0 - I didn’t validate requirements
+   - Usually this needs to be buttoned down prior to touching code
+   - Conversations save money
+3. Things I would work on
+   - Responsive design
+   - More CSS reuse (theming)
+   - Break out components more
+   - Expand on validation
+   - Consistency
+     - I use a lot of different methods in here, to start a conversation, not to declare what is “right” or “wrong”
+   - State management - getting REAALLLY close
+   - More branches - I don’t ever commit directly to dev
+     - Break out by features - prs
+   - CICD - manual deployments are scary
+   - TESTS
+
+## Project overview
+
+For this project, I leveraged [Firebase](https://firebase.google.com/) to create a fully serverless demo. I've used it for dozens of POCs to get things up and running quickly and because it seemed like a good opportunity to poke around an see what's changed since I last touched it.
+
+This project uses [Cloud Functions for Firebase](https://firebase.google.com/docs/functions), for the apollo server and [Cloud Firestore](https://firebase.google.com/docs/firestore) for a NoSQL database. I also configured the frontend to be hosted using [Firebase Hosting](https://firebase.google.com/docs/hosting).
+
+Getting started:
+
+1. Either request a key temporary service key, or create your own firebase project and setup your local development environments using the following guides.
+
+- getting started with [functions](https://firebase.google.com/docs/functions/get-started)
+- getting started with [firestore](https://firebase.google.com/docs/firestore/quickstart)
+- getting started with [hosting](https://firebase.google.com/docs/hosting/deploying)
+
+## Concurrent local development
+
+This project utilizes [concurrently](https://www.npmjs.com/package/concurrently) to facilitate local testing
+
+1. In BOTH directories install packages using `yarn`
+2. Navigate to `./frontend` and run `yarn all`
+
+By running yarn all you will concurrently run the react app and the apollo server using the following command: "all": "concurrently \"cd ../functions&& yarn serve\" \"yarn start\""
+
+## Apollo Server
+
+You can run the server locally using [firebase functions local emulator suite](https://firebase.google.com/docs/emulator-suite)
+
+1. Navigate to `./functions`
+2. Install using `yarn`
+3. Ensure you have an active service key labeled as `./functions/myreCarServiceAccount.json` this is needed to interact with the db
+4. Start the local server `yarn serve`
+5. Open up the gql playground at `http://localhost:5001/{your-project-name}/graphql`
+
+## Frontend
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn all`
-
-This project leverages the package [https://www.npmjs.com/package/concurrently](concurrently) which has been configured to simultaneously run the apollo server and the frontend in development mode.
-
-### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-# Acknowledgements
-
-1. This is not “Done” - Definition of Done for this was POC
-2. Step 0 - I didn’t validate requirements
-   1. Usually this needs to be buttoned down prior to touching code
-   2. Conversations save money
-3. Things I would work on
-   1. Responsive design
-   2. More CSS reuse
-   3. Break out components more
-   4. Expand on validation
-   5. Consistency
-      1. I use a lot of different methods in here, to start a conversation, not to declare what is “right” or “wrong”
-   6. State management - getting REAALLLY close
-   7. More branches - I don’t ever commit directly to dev
-      1. Break out by features - prs
-   8. CICD - manual deployments are scary
+1. Navigate to `./frontend`
+2. Install using `yarn`
+3. Run the app in development mode `yarn start`
 
 # Questions
 
