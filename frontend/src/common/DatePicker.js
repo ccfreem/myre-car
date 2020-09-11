@@ -7,7 +7,7 @@ import {
 import styled from 'styled-components'
 
 const StyledDatePicker = styled(KeyboardDatePicker)`
-  & {
+  && {
     width: ${p => p.width};
     margin: 16px 0 8px;
     min-width: 200px;
