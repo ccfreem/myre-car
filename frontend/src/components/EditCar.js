@@ -187,6 +187,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
           console.error(err)
           // Definitely alert the user
           setAlert('Uh oh! Something went wrong!')
+          // Should reset form state
         })
       } else {
         checkForEmpty()
@@ -209,6 +210,7 @@ const EditCars = ({ car, newCar, refetch, setWantsToEdit, setAlert }) => {
           console.error(err)
           // Definitely alert the user
           setAlert('Uh oh! Something went wrong!')
+          // Should reset form state
         })
       } else {
         checkForEmpty()
